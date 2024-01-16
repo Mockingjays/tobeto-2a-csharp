@@ -3,7 +3,11 @@ using Business.Abstract;
 using Business.BusinessRules;
 using Business.Concrete;
 using Business.Requests.Brand;
+using Business.Requests.Fuel;
+using Business.Requests.Transmission;
 using Business.Responses.Brand;
+using Business.Responses.Fuel;
+using Business.Responses.Transmission;
 using DataAccess.Abstract;
 using DataAccess.Concrete.InMemory;
 using Entities.Concrete;
@@ -27,4 +31,37 @@ public static class ServiceRegistration
         BrandBusinessRules,
         Mapper
     );
-} // IoC Container yapımızı kurduğumuz Dependency Injection ile daha verimli hale getiricez.
+    public static readonly IFuelDal FuelDal = new InMemoryFuelDal();
+
+    public static readonly FuelBusinessRules FuelBusinessRules = new FuelBusinessRules(FuelDal);
+
+    public static IMapper FMapper = new MapperConfiguration(fcfg =>
+    {
+        fcfg.CreateMap<AddFuelRequest, Fuel>();
+        fcfg.CreateMap<Fuel, AddFuelResponse>();
+    }).CreateMapper();
+
+    public static readonly IFuelService FuelService = new FuelManager(
+        FuelDal,
+        FuelBusinessRules,
+        FMapper
+    );
+
+    public static readonly ITransmissionDal TransmissionDal = new InMemoryTransmissionDal();
+
+    public static readonly TransmissionBusinessRules TransmissionBusinessRules = new TransmissionBusinessRules(TransmissionDal);
+
+    public static IMapper TMapper = new MapperConfiguration(tcfg =>
+    {
+        tcfg.CreateMap<AddTransmissionRequest, Transmission>();
+        tcfg.CreateMap<Transmission, AddTransmissionResponse>();
+    }).CreateMapper();
+
+    public static readonly ITransmissionService TransmissionService = new TransmissionManager(
+        TransmissionDal,
+        TransmissionBusinessRules,
+        TMapper
+    ); 
+}
+
+   
